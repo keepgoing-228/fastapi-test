@@ -1,13 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends
 from app.schemas import OrderCreateInput, OrderUpdateInput
+from uuid import UUID
+
 
 app = FastAPI()
 
 # simple memory storage
 orders_db = {
-    "1": {"name": "order 1", "number": 1},
-    "2": {"name": "order 2", "number": 2},
-    "3": {"name": "order 3", "number": 3},
+    "3fa85f64-5717-4562-b3fc-2c963f66afa6": {"name": "order 1", "number": 1},
 }
 
 
@@ -49,3 +49,16 @@ def update_order(order_id: str, data: OrderUpdateInput):
     orders_db[order_id]["name"] = data.name
     orders_db[order_id]["number"] = data.number
     return orders_db[order_id]
+
+
+# Check if the order exists by using a dependency
+def get_order_data(id: UUID) -> dict:
+    id = str(id)
+    if id not in orders_db:
+        raise HTTPException(status_code=404, detail=f"Order {id} not found")
+    return orders_db[id]
+
+
+@app.get("/test")
+def test_depends(test: dict = Depends(get_order_data)):
+    return {"test": test}
