@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
-from app.schemas import OrderCreateInput, OrderUpdateInput
+from app.auth import OrderCreateInput, OrderUpdateInput
 from uuid import UUID
+from typing import Annotated
 
 
 app = FastAPI()
@@ -60,5 +61,5 @@ def get_order_data(id: UUID) -> dict:
 
 
 @app.get("/test")
-def test_depends(test: dict = Depends(get_order_data)):
+def test_depends(test: Annotated[dict, Depends(get_order_data)]):
     return {"test": test}
