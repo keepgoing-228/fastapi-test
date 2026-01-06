@@ -32,3 +32,14 @@ def get_customers_by_id(id: UUID, db: Session = Depends(get_db)):
     if not customer:
         raise exception.CustomerNotFound()
     return customer
+
+
+@app.patch("/customers", response_model=schemas.Customer)
+def update_customer(
+    id: UUID, update_data: schemas.CustomerCreateInput, db: Session = Depends(get_db)
+):
+    id = str(id)
+    customer = service.get_customer_by_id(db, id)
+    if not customer:
+        raise exception.CustomerNotFound()
+    return service.update_customer(db, update_data, customer)

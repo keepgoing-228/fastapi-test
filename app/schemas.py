@@ -1,5 +1,6 @@
 from pydantic import BaseModel, field_validator, Field
 from datetime import datetime
+from typing import Optional
 
 
 class DateTimeBase(BaseModel):
@@ -21,4 +22,6 @@ class Customer(DateTimeBase):
 
 
 class CustomerCreateInput(BaseModel):
-    customer_name: str = Field(..., min_length=1, max_length=30, title="Customer Name")
+    customer_name: Optional[str] = Field(
+        ..., min_length=1, max_length=30, title="Customer Name"
+    )
