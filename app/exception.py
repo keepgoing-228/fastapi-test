@@ -15,3 +15,11 @@ class ServerError(DetailedHTTPException):
     def __init__(self, detail: str) -> None:
         self.DETAIL = detail
         super().__init__()
+
+
+class NotFound(DetailedHTTPException):
+    STATUS_CODE = status.HTTP_404_NOT_FOUND
+
+
+class CustomerNotFound(NotFound):
+    DETAIL = "Customer not found"
