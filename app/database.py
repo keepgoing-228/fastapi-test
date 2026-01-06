@@ -2,7 +2,9 @@ from sqlalchemy import create_engine, String, DateTime, func, mapped_column
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from app.utils import generate_uuid
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
+SQLALCHEMY_DATABASE_URL = (
+    "postgresql://sw:asrock2002@4c-9700.local:5432/fastapi_test_db"
+)
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
