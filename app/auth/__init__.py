@@ -1,4 +1,4 @@
-from .type import OrderCreateInput, OrderUpdateInput
+from app.auth.schemas import OrderCreateInput, OrderUpdateInput
 
 __all__ = [
     "OrderCreateInput",
