@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Depends, status
+from uuid import UUID
 from sqlalchemy.orm import Session
 
-from app import schemas, service
+from app import schemas, service, exception
 from app.database import get_db
 
 
@@ -17,3 +18,17 @@ def create_customer(
     customer: schemas.CustomerCreateInput, db: Session = Depends(get_db)
 ):
     return service.create_customer(db, customer)
+
+
+@app.get("/customers/all", response_model=list[schemas.Customer | None])
+def get_all_customers(db: Session = Depends(get_db)):
+    return service.get_all_customers(db)
+
+
+@app.get("/customers", response_model=schemas.Customer)
+def get_customers_by_id(id: UUID, db: Session = Depends(get_db)):
+    id = str(id)
+    customer = service.get_customer_by_id(db, id)
+    if not customer:
+        raise exception.CustomerNotFound()
+    return customer
