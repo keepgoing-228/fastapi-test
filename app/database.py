@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, String, DateTime, func, mapped_column
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy import create_engine, String, DateTime, func
+from sqlalchemy.orm import sessionmaker, DeclarativeBase, mapped_column
 from app.utils import generate_uuid
 
 SQLALCHEMY_DATABASE_URL = (
