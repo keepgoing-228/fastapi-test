@@ -22,13 +22,19 @@ def create_customer(
 
 def get_all_customers(db: Session) -> list[models.Customer]:
     query = select(models.Customer).options(noload(models.Customer.orders))
-    customers = db.execute(query).scalars().all()
+    try:
+        customers = db.execute(query).scalars().all()
+    except Exception as e:
+        raise exception.ServerError(f"Error getting all customers: {str(e)}")
     return customers
 
 
 def get_customer_by_id(db: Session, id: str) -> models.Customer:
     query = select(models.Customer).where(models.Customer.id == id)
-    customer = db.execute(query).scalar()
+    try:
+        customer = db.execute(query).scalar()
+    except Exception as e:
+        raise exception.ServerError(f"Error getting customer by id: {str(e)}")
     return customer
 
 
@@ -46,3 +52,13 @@ def update_customer(
         print(f"Error updating customer: {type(e).__name__}: {str(e)}")
         raise exception.ServerError(f"Error updating customer: {str(e)}")
     return customer
+
+
+def delete_customer(db: Session, customer: models.Customer) -> None:
+    try:
+        db.delete(customer)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(f"Error deleting customer: {type(e).__name__}: {str(e)}")
+        raise exception.ServerError(f"Error deleting customer: {str(e)}")

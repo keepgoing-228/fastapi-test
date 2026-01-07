@@ -43,3 +43,16 @@ def update_customer(
     if not customer:
         raise exception.CustomerNotFound()
     return service.update_customer(db, update_data, customer)
+
+
+@app.delete(
+    "/customers",
+    # status_code=status.HTTP_204_NO_CONTENT,
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Customer not found"}},
+)
+def delete_customer(id: UUID, db: Session = Depends(get_db)):
+    id = str(id)
+    customer = service.get_customer_by_id(db, id)
+    if not customer:
+        raise exception.CustomerNotFound()
+    service.delete_customer(db, customer)
