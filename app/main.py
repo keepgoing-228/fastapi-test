@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, status
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from app import schemas, service, exception
+from app import schemas, service, exceptions, dependencies
 from app.database import get_db
 
 
@@ -17,6 +17,7 @@ app = FastAPI()
 def create_customer(
     customer: schemas.CustomerCreateInput, db: Session = Depends(get_db)
 ):
+    customer, db = dependencies.check_new_customer(customer, db)
     return service.create_customer(db, customer)
 
 
@@ -30,7 +31,7 @@ def get_customers_by_id(id: UUID, db: Session = Depends(get_db)):
     id = str(id)
     customer = service.get_customer_by_id(db, id)
     if not customer:
-        raise exception.CustomerNotFound()
+        raise exceptions.CustomerNotFound()
     return customer
 
 
@@ -41,7 +42,7 @@ def update_customer(
     id = str(id)
     customer = service.get_customer_by_id(db, id)
     if not customer:
-        raise exception.CustomerNotFound()
+        raise exceptions.CustomerNotFound()
     return service.update_customer(db, update_data, customer)
 
 
@@ -54,5 +55,5 @@ def delete_customer(id: UUID, db: Session = Depends(get_db)):
     id = str(id)
     customer = service.get_customer_by_id(db, id)
     if not customer:
-        raise exception.CustomerNotFound()
+        raise exceptions.CustomerNotFound()
     service.delete_customer(db, customer)
