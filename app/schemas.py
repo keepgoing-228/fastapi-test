@@ -1,3 +1,5 @@
+### Schemas for Pydantic models ###
+
 from pydantic import BaseModel, field_validator, Field, EmailStr
 from datetime import datetime
 from typing import Optional
@@ -25,5 +27,10 @@ class CustomerCreateInput(BaseModel):
     customer_name: Optional[str] = Field(
         ..., min_length=1, max_length=30, title="Customer Name"
     )
+    email: EmailStr
+    password: str = Field(..., min_length=8, max_length=30, title="Password")
+
+
+class LoginInput(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=30, title="Password")

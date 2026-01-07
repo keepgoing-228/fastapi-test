@@ -55,3 +55,8 @@ def delete_customer(id: UUID, db: Session = Depends(get_db)):
     if not customer:
         raise exceptions.CustomerNotFound()
     service.delete_customer(db, customer)
+
+
+@app.post("/login", response_model=schemas.Customer)
+def login(customer: schemas.Customer = Depends(dependencies.authenticate_customer)):
+    return customer

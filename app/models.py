@@ -1,3 +1,5 @@
+### SQLAlchemy models for the database schema ###
+
 from sqlalchemy import ForeignKey, String, Integer, Float
 from sqlalchemy.orm import mapped_column, relationship
 
