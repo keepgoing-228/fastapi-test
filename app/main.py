@@ -47,7 +47,7 @@ def update_customer(
 
 @app.delete(
     "/customers",
-    # status_code=status.HTTP_204_NO_CONTENT,
+    status_code=status.HTTP_204_NO_CONTENT,
     responses={status.HTTP_404_NOT_FOUND: {"description": "Customer not found"}},
 )
 def delete_customer(id: UUID, db: Session = Depends(get_db)):
