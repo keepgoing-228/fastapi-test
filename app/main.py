@@ -14,10 +14,8 @@ app = FastAPI()
     status_code=status.HTTP_201_CREATED,
     response_model=schemas.Customer,
 )
-def create_customer(
-    customer: schemas.CustomerCreateInput, db: Session = Depends(get_db)
-):
-    customer, db = dependencies.check_new_customer(customer, db)
+def create_customer(dependency=Depends(dependencies.check_new_customer)):
+    customer, db = dependency
     return service.create_customer(db, customer)
 
 
