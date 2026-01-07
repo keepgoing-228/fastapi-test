@@ -8,6 +8,8 @@ class Customer(Base):
     __tablename__ = "customers"
 
     customer_name = mapped_column(String, nullable=False)
+    email = mapped_column(String, nullable=False)
+    password = mapped_column(String, nullable=False)
     orders = relationship("Order", back_populates="customer", lazy="joined")
 
 
