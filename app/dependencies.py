@@ -16,7 +16,8 @@ def check_new_customer(
 
 
 def authenticate_customer(
-    data: schemas.LoginInput, db: Session = Depends(get_db)
+    data: schemas.LoginInput,  # `data` is the request body
+    db: Session = Depends(get_db),  # `db` is the database session
 ) -> models.Customer:
     db_customer = service.get_customer_by_email(db, data.email)
     if not db_customer:
