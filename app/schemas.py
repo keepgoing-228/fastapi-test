@@ -34,3 +34,7 @@ class CustomerCreateInput(BaseModel):
 class LoginInput(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=30, title="Password")
+
+
+class LoginReturn(Customer):
+    token: str

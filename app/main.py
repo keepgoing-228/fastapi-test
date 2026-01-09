@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, status
 from uuid import UUID
 from sqlalchemy.orm import Session
 
-from app import schemas, service, exceptions, dependencies
+from app import schemas, service, exceptions, dependencies, models, jwt
 from app.database import get_db
 
 
@@ -57,6 +57,9 @@ def delete_customer(id: UUID, db: Session = Depends(get_db)):
     service.delete_customer(db, customer)
 
 
-@app.post("/login", response_model=schemas.Customer)
-def login(customer: schemas.Customer = Depends(dependencies.authenticate_customer)):
-    return customer
+@app.post("/login", response_model=schemas.LoginReturn)
+def login(customer: models.Customer = Depends(dependencies.authenticate_customer)):
+    access_token = jwt.create_access_token(
+        data={"sub": customer.id, "email": customer.email}
+    )
+    return schemas.LoginReturn(**customer.__dict__, token=access_token)
