@@ -24,16 +24,22 @@ def get_all_customers(db: Session = Depends(get_db)):
     return service.get_all_customers(db)
 
 
-@app.get("/customers", response_model=schemas.Customer)
-def get_customers_by_id(id: UUID, db: Session = Depends(get_db)):
-    id = str(id)
+@app.get(
+    "/customers/me",
+    response_model=schemas.Customer,
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Customer not found"}},
+)
+def get_current_customer(
+    jwt_data: dict = Depends(jwt.decode_token), db: Session = Depends(get_db)
+):
+    id = jwt_data.get("sub")
     customer = service.get_customer_by_id(db, id)
     if not customer:
         raise exceptions.CustomerNotFound()
     return customer
 
 
-@app.patch("/customers", response_model=schemas.Customer)
+@app.patch("/customers/{id}", response_model=schemas.Customer)
 def update_customer(
     id: UUID, update_data: schemas.CustomerCreateInput, db: Session = Depends(get_db)
 ):
@@ -45,7 +51,7 @@ def update_customer(
 
 
 @app.delete(
-    "/customers",
+    "/customers/{id}",
     status_code=status.HTTP_204_NO_CONTENT,
     responses={status.HTTP_404_NOT_FOUND: {"description": "Customer not found"}},
 )
@@ -60,6 +66,9 @@ def delete_customer(id: UUID, db: Session = Depends(get_db)):
 @app.post("/login", response_model=schemas.LoginReturn)
 def login(customer: models.Customer = Depends(dependencies.authenticate_customer)):
     access_token = jwt.create_access_token(
-        data={"sub": customer.id, "email": customer.email}
+        data={
+            "sub": customer.id,
+            "email": customer.email,
+        }  # sub is the subject of the JWT token, email is defined by us (customer)
     )
     return schemas.LoginReturn(**customer.__dict__, token=access_token)

@@ -33,3 +33,15 @@ class InvalidPasswordOrEmail(DetailedHTTPException):
 class CustomerAlreadyExists(DetailedHTTPException):
     DETAIL = "Customer already exists"
     STATUS_CODE = status.HTTP_400_BAD_REQUEST
+
+
+class NotAuthenticated(DetailedHTTPException):
+    DETAIL = "Not authenticated"
+    STATUS_CODE = status.HTTP_401_UNAUTHORIZED
+
+    def __init__(self) -> None:
+        super().__init__(headers={"WWW-Authenticate": "Bearer"})
+
+
+class CredentialsDataWrong(NotAuthenticated):
+    DETAIL = "Credentials data wrong"
