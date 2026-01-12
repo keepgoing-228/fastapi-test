@@ -50,3 +50,12 @@ class CredentialsDataWrong(NotAuthenticated):
 class UnauthorizedOperation(DetailedHTTPException):
     DETAIL = "Unauthorized operation"
     STATUS_CODE = status.HTTP_401_UNAUTHORIZED
+
+
+class ItemNotFound(NotFound):
+    DETAIL = "Item not found"
+
+
+class ItemAlreadyExists(DetailedHTTPException):
+    DETAIL = "Item already exists"
+    STATUS_CODE = status.HTTP_400_BAD_REQUEST

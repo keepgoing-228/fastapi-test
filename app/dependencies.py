@@ -25,3 +25,13 @@ def authenticate_customer(
     if not utils.verify_password(data.password, db_customer.password):
         raise exceptions.InvalidPasswordOrEmail()
     return db_customer
+
+
+def check_new_item(
+    item: schemas.ItemCreateInput,
+    db: Session = Depends(get_db),
+) -> tuple[schemas.ItemCreateInput, Session]:
+    db_item = service.get_item_by_name(db, item.item_name)
+    if db_item:
+        raise exceptions.ItemAlreadyExists()
+    return item, db

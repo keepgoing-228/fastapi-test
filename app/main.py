@@ -90,3 +90,61 @@ def login(customer: models.Customer = Depends(dependencies.authenticate_customer
         }  # sub is the subject of the JWT token, email is defined by us (customer)
     )
     return schemas.LoginReturn(**customer.__dict__, token=access_token)
+
+
+@app.post(
+    "/items",
+    status_code=status.HTTP_201_CREATED,
+    response_model=schemas.ItemBase,
+)
+def create_item(dependency=Depends(dependencies.check_new_item)):
+    """
+    Create an item
+    """
+    item, db = dependency
+    return service.create_item(db, item)
+
+
+@app.get(
+    "/items",
+    response_model=list[schemas.ItemBase],
+)
+def get_items(db: Session = Depends(get_db)):
+    """
+    Get all items
+    """
+    return service.get_all_items(db)
+
+
+@app.patch(
+    "/items",
+    response_model=schemas.ItemBase,
+    responses={404: {"description": "Item not found"}},
+)
+def update_item(
+    id: UUID, update_data: schemas.ItemUpdateInput, db: Session = Depends(get_db)
+):
+    """
+    Update an item
+    """
+    id = str(id)
+    item = service.get_item_by_id(db, id)
+    if not item:
+        raise exceptions.ItemNotFound()
+    return service.update_item(db, update_data, item)
+
+
+@app.delete(
+    "/items",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={404: {"description": "Item not found"}},
+)
+def delete_item(id: UUID, db: Session = Depends(get_db)):
+    """
+    Delete an item
+    """
+    id = str(id)
+    item = service.get_item_by_id(db, id)
+    if not item:
+        raise exceptions.ItemNotFound()
+    service.delete_item(db, item)

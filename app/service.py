@@ -72,3 +72,64 @@ def delete_customer(db: Session, customer: models.Customer) -> None:
         db.rollback()
         print(f"Error deleting customer: {type(e).__name__}: {str(e)}")
         raise exceptions.ServerError(f"Error deleting customer: {str(e)}")
+
+
+def create_item(db: Session, item: schemas.ItemCreateInput):
+    db_item = models.Item(**item.model_dump())
+
+    db.add(db_item)
+    try:
+        db.commit()
+        db.refresh(db_item)
+    except Exception as e:
+        db.rollback()
+        print(e)
+        raise exceptions.ServerError("Error creating item")
+
+    return db_item
+
+
+def get_item_by_id(db: Session, id: str) -> models.Item:
+    query = select(models.Item).where(models.Item.id == id)
+    item = db.execute(query).scalar()
+    return item
+
+
+def get_item_by_name(db: Session, name: str) -> models.Item:
+    query = select(models.Item).where(models.Item.item_name == name)
+    item = db.execute(query).scalar()
+    return item
+
+
+def get_all_items(db: Session):
+    query = select(models.Item)
+    items = db.execute(query).scalars().all()
+    return items
+
+
+def update_item(
+    db: Session, update_data: schemas.ItemUpdateInput, item: models.Item
+) -> models.Item:
+    update_data: dict = update_data.model_dump(exclude_unset=True, exclude_none=True)
+    for key, value in update_data.items():
+        setattr(item, key, value)
+
+    try:
+        db.commit()
+        db.refresh(item)
+    except Exception as e:
+        db.rollback()
+        print(e)
+        raise exceptions.ServerError("Error updating item")
+
+    return item
+
+
+def delete_item(db: Session, item: models.Item):
+    try:
+        db.delete(item)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        print(e)
+        raise exceptions.ServerError("Error deleting item")

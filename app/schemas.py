@@ -38,3 +38,24 @@ class LoginInput(BaseModel):
 
 class LoginReturn(Customer):
     token: str
+
+
+class ItemBase(DateTimeBase):
+    id: str
+    item_name: str
+    price: float
+    quantity: int
+
+    model_config = {"from_attributes": True}
+
+
+class ItemCreateInput(BaseModel):
+    item_name: str
+    price: float
+    quantity: int
+
+
+class ItemUpdateInput(BaseModel):
+    item_name: Optional[str]
+    price: Optional[float]
+    quantity: Optional[int]
