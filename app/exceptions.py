@@ -59,3 +59,7 @@ class ItemNotFound(NotFound):
 class ItemAlreadyExists(DetailedHTTPException):
     DETAIL = "Item already exists"
     STATUS_CODE = status.HTTP_400_BAD_REQUEST
+
+class ItemNotEnoughQuantity(DetailedHTTPException):
+    DETAIL = "Item not enough quantity"
+    STATUS_CODE = status.HTTP_400_BAD_REQUEST
