@@ -45,3 +45,8 @@ class NotAuthenticated(DetailedHTTPException):
 
 class CredentialsDataWrong(NotAuthenticated):
     DETAIL = "Credentials data wrong"
+
+
+class UnauthorizedOperation(DetailedHTTPException):
+    DETAIL = "Unauthorized operation"
+    STATUS_CODE = status.HTTP_401_UNAUTHORIZED

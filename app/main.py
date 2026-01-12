@@ -41,10 +41,19 @@ def get_current_customer(
 
 @app.patch("/customers/{id}", response_model=schemas.Customer)
 def update_customer(
-    id: UUID, update_data: schemas.CustomerCreateInput, db: Session = Depends(get_db)
+    id: UUID,
+    update_data: schemas.CustomerCreateInput,
+    jwt_data: dict = Depends(jwt.decode_token),
+    db: Session = Depends(get_db),
 ):
-    id = str(id)
-    customer = service.get_customer_by_id(db, id)
+
+    customer_id = str(id)
+    current_customer_id = jwt_data.get("sub")
+
+    if customer_id != current_customer_id:
+        raise exceptions.UnauthorizedOperation()
+
+    customer = service.get_customer_by_id(db, customer_id)
     if not customer:
         raise exceptions.CustomerNotFound()
     return service.update_customer(db, update_data, customer)
@@ -55,9 +64,18 @@ def update_customer(
     status_code=status.HTTP_204_NO_CONTENT,
     responses={status.HTTP_404_NOT_FOUND: {"description": "Customer not found"}},
 )
-def delete_customer(id: UUID, db: Session = Depends(get_db)):
-    id = str(id)
-    customer = service.get_customer_by_id(db, id)
+def delete_customer(
+    id: UUID,
+    jwt_data: dict = Depends(jwt.decode_token),
+    db: Session = Depends(get_db),
+):
+    customer_id = str(id)
+    current_customer_id = jwt_data.get("sub")
+
+    if customer_id != current_customer_id:
+        raise exceptions.UnauthorizedOperation()
+
+    customer = service.get_customer_by_id(db, customer_id)
     if not customer:
         raise exceptions.CustomerNotFound()
     service.delete_customer(db, customer)
