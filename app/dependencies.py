@@ -48,3 +48,14 @@ def check_is_admin(jwt_data: dict = Depends(jwt.decode_token)) -> bool:
     if jwt_data["sub"] != "admin":
         raise exceptions.NotAdmin()
     return True
+
+
+def check_item_enough_quantity(
+    order: schemas.OrderCreateInput, db: Session = Depends(get_db)
+) -> tuple[models.Item, schemas.OrderCreateInput, Session]:
+    item = service.get_lock_item_by_id(db, order.item_id)
+    if not item:
+        raise exceptions.ItemNotFound()
+    if item.quantity < order.quantity:
+        raise exceptions.ItemNotEnoughQuantity()
+    return item, order, db

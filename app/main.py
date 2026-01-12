@@ -171,3 +171,20 @@ def get_admin_items(db: Session = Depends(get_db)):
     Get all items for admin
     """
     return service.get_all_items(db)
+
+
+@app.post(
+    "/orders",
+    status_code=status.HTTP_201_CREATED,
+    response_model=schemas.OrderBase,
+)
+def create_order(
+    jwt_data: dict = Depends(jwt.decode_token),
+    dependency=Depends(dependencies.check_item_enough_quantity),
+):
+    """
+    Create an order
+    """
+    item, order, db = dependency
+    customer_id = jwt_data["sub"]
+    return service.create_order(db, item, order, customer_id)

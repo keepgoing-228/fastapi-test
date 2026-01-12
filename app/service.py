@@ -133,3 +133,28 @@ def delete_item(db: Session, item: models.Item):
         db.rollback()
         print(e)
         raise exceptions.ServerError("Error deleting item")
+
+
+def get_lock_item_by_id(db: Session, id: str) -> models.Item:
+    query = select(models.Item).where(models.Item.id == id).with_for_update()
+    item = db.execute(query).scalar()
+    return item
+
+
+def create_order(
+    db: Session, item: models.Item, order: schemas.OrderCreateInput, customer_id: str
+):
+    db_order = models.Order(**order.model_dump())
+    db_order.customer_id = customer_id
+    item.quantity -= order.quantity
+
+    db.add(db_order)
+    try:
+        db.commit()
+        db.refresh(db_order)
+    except Exception as e:
+        db.rollback()
+        print(e)
+        raise exceptions.ServerError("Error creating order")
+
+    return db_order

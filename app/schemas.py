@@ -59,3 +59,17 @@ class ItemUpdateInput(BaseModel):
     item_name: Optional[str]
     price: Optional[float]
     quantity: Optional[int]
+
+
+class OrderBase(DateTimeBase):
+    id: str
+    customer_id: str
+    item_id: str
+    quantity: int
+
+    model_config = {"from_attributes": True}
+
+
+class OrderCreateInput(BaseModel):
+    item_id: str
+    quantity: int
