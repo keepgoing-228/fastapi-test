@@ -148,3 +148,26 @@ def delete_item(id: UUID, db: Session = Depends(get_db)):
     if not item:
         raise exceptions.ItemNotFound()
     service.delete_item(db, item)
+
+
+@app.post("/admin/login", response_model=str)
+def admin_login(
+    admin: bool = Depends(dependencies.authenticate_admin),
+):
+    """
+    Admin Login
+    """
+    access_token = jwt.create_access_token(data={"sub": "admin"})
+    return access_token
+
+
+@app.get(
+    "/admin/items",
+    response_model=list[schemas.ItemBase],
+    dependencies=[Depends(dependencies.check_is_admin)],  # return bool?
+)
+def get_admin_items(db: Session = Depends(get_db)):
+    """
+    Get all items for admin
+    """
+    return service.get_all_items(db)

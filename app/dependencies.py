@@ -2,7 +2,8 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app import schemas, service, exceptions, utils, models
+from app import schemas, service, exceptions, utils, models, jwt
+from app.config import ADMIN_EMAIL, ADMIN_PASSWORD
 
 
 def check_new_customer(
@@ -35,3 +36,15 @@ def check_new_item(
     if db_item:
         raise exceptions.ItemAlreadyExists()
     return item, db
+
+
+def authenticate_admin(data: schemas.LoginInput) -> bool:
+    if data.email != ADMIN_EMAIL or data.password != ADMIN_PASSWORD:
+        raise exceptions.InvalidPasswordOrEmail()
+    return True
+
+
+def check_is_admin(jwt_data: dict = Depends(jwt.decode_token)) -> bool:
+    if jwt_data["sub"] != "admin":
+        raise exceptions.NotAdmin()
+    return True
