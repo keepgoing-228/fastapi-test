@@ -306,7 +306,7 @@ alembic downgrade -1
 ### Running Tests
 
 ```python
-TODO: pytest
+# TODO: pytest
 ```
 
 
@@ -321,15 +321,7 @@ Access Adminer at: http://localhost:8081
 
 ## Security Notes
 
-⚠️ **Important**: Before deploying to production:
-
-1. Change the `SECRET_KEY` in `app/config.py`
-2. Use environment variables for sensitive configuration
-3. Update database credentials
-4. Enable HTTPS
-5. Implement rate limiting
-6. Add input validation and sanitization
-7. Review and update password requirements
+⚠️ **Important**: Before deploying to production: Change the `SECRET_KEY` in `app/config.py`
 
 ## References
 
